@@ -13,7 +13,8 @@ kBlog 是轻量的静态网站生成器，让你立即开始记录自己的 idea
 ### Github Pages
  
 1. fork 本仓库
-2. 添加一个新的 .md 后缀的 Markdown 文件
+2. 在仓库设置页打开 Pages 设置, 在 Build and deployment 中把 Source 设置为 Github Action
+3. 添加一个新的 .md 后缀的 Markdown 文件, 编辑一些内容然后提交
  
 ### 本地生成
  
