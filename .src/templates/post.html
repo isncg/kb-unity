@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+
+<head>
+    <link rel="stylesheet" href="{{ doc_root }}css/style.css">
+    <meta charset="utf-8">
+</head>
+
+<body>
+    <div id="viewport">
+        <div id="titleline">
+            <div id="title">{{ title }}</div>
+        </div>
+        <div id="markdown">
+            <div id="meta">{{ author }} {{ date }}</div>
+            {{ markdown_html }}
+        </div>
+    </div>
+</body>
