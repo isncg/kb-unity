@@ -6,7 +6,7 @@ kBlog 是轻量的静态网站生成器，让你立即开始记录自己的 idea
  
 - **基于文件目录结构生成：** Markdown文件的文件目录组织方式决定它们的 url
 - **签字风格的 meta：** 作者、日期等信息设计在 Markdown 文件结尾，不妨影响源 Markdown 的美观
-- **可定制的 Markdown to HTML 生成器:** 生成器由 Lua 语言实现，易于自定义功能
+- **可定制的 Markdown to HTML 生成器：** 生成器由 Lua 语言实现，易于自定义功能
  
 ## 快速上手
 
