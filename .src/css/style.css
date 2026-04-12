@@ -66,6 +66,11 @@
     font-size: 2em;
 }
 
+#viewport #meta {
+    float: right;
+    font-weight: bold;
+}
+
 #markdown h1 {
     display: block;
     background-color: burlywood;

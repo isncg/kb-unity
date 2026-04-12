@@ -97,6 +97,10 @@ local function parse_meta_data(content)
         local key, value = lines[i]:match("^@(%w+)%s+(.+)$")
         if key and value then
             metadata[key] = value
+        else local flag = lines[i]:match("^@(%w+)$")
+            if flag then
+                meta_data[flag] = true
+            end
         end
         i = i - 1
     end
@@ -107,7 +111,6 @@ end
 local input_root_directory = ".."
 local output_root_directory = "../.build"
 local function traverse(directory, doc_root)
-    local has_index = false
     local post_list = {}
     for file_name in lfs.dir(directory) do
         if not s_startswith(file_name, ".") then
@@ -115,9 +118,6 @@ local function traverse(directory, doc_root)
             local attr = lfs.attributes(input_file_path)
             if attr.mode == "file" then
                 if s_endswith(file_name, ".md") then
-                    if file_name == "index.md" then
-                        has_index = true
-                    end
                     local content = f_read(input_file_path)
                     local first_line = string.match(content, "^[^\n]+")
                     local title
@@ -125,54 +125,68 @@ local function traverse(directory, doc_root)
                         title = string.sub(first_line, 3)
                         content = string.sub(content, string.len(first_line) + 2)
                     end
-
                     local meta_data, rest_content = parse_meta_data(content)
+                   
                     local date = meta_data.date or ""
                     local author = meta_data.author or ""
                     content = rest_content
 
                     post_list[#post_list + 1] = {
+                        input_file_path = input_file_path,
                         title = title,
-                        date = date,
-                        author = author,
-                        file_name = file_name:gsub(".md$", ".html")
+                        file_name = file_name:gsub(".md$", ".html"),
+                        content = content,
+                        doc_root = doc_root,
+                        markdown_html = markdown(content),
+                        meta_data = meta_data
                     }
-
-                    local markdown_html = markdown(content)
-                    local result, error = aspect:render("post",
-                        { markdown_html = markdown_html, doc_root = doc_root, title = title, date = date, author = author })
-                    if error then
-                        print(error)
-                    else
-                        local output_file_path = input_file_path
-                            :gsub("^" .. input_root_directory, output_root_directory)
-                            :gsub(".md$", ".html")
-                        print("write post", output_file_path, meta_data.author, meta_data.date)
-
-                        -- io.open(output_file_path, "w"):write(html):close()
-                        f_write(output_file_path, tostring(result))
-                    end
                 end
             elseif attr.mode == "directory" then
                 traverse(input_file_path, doc_root .. "../")
             end
         end
     end
-    if not has_index and #post_list > 0 then
+    if #post_list > 0 then
         table.sort(post_list, function(a, b)
             if a.date == b.date then
                 return a.file_name > b.file_name
             end
             return a.date > b.date
         end)
-        local result, error = aspect:render("index", { post_list = post_list, doc_root = doc_root })
-        if error then
-            print(error)
-        else
-            local output_file_path = directory:gsub("^" .. input_root_directory, output_root_directory) .. "/index.html"
-            print("write index", output_file_path)
-            -- io.open(output_file_path, "w"):write(html):close()
-            f_write(output_file_path, tostring(result))
+
+        local post_list_count = #post_list
+        for _, post in ipairs(post_list) do
+            local markdown_html = markdown(post.content)
+            local result, error = aspect:render("post", post)
+            if error then
+                print(error)
+            else
+                local output_file_path
+                if post_list_count == 1 then
+                    output_file_path = directory:gsub("^" .. input_root_directory, output_root_directory) .. "/index.html"
+                else
+                    output_file_path = post.input_file_path
+                        :gsub("^" .. input_root_directory, output_root_directory)
+                        :gsub(".md$", ".html")
+                end
+                print("write post", output_file_path, post.meta_data.author, post.meta_data.date)
+
+                -- io.open(output_file_path, "w"):write(html):close()
+                f_write(output_file_path, tostring(result))
+            end
+        end
+
+
+        if post_list_count > 1 then
+            local result, error = aspect:render("index", { post_list = post_list, doc_root = doc_root })
+            if error then
+                print(error)
+            else
+                local output_file_path = directory:gsub("^" .. input_root_directory, output_root_directory) .. "/index.html"
+                print("write index", output_file_path)
+                -- io.open(output_file_path, "w"):write(html):close()
+                f_write(output_file_path, tostring(result))
+            end
         end
     end
 end
