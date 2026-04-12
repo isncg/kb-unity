@@ -107,6 +107,7 @@ end
 local input_root_directory = ".."
 local output_root_directory = "../.build"
 local function traverse(directory, doc_root)
+    local has_index = false
     local post_list = {}
     for file_name in lfs.dir(directory) do
         if not s_startswith(file_name, ".") then
@@ -114,6 +115,9 @@ local function traverse(directory, doc_root)
             local attr = lfs.attributes(input_file_path)
             if attr.mode == "file" then
                 if s_endswith(file_name, ".md") then
+                    if file_name == "index.md" then
+                        has_index = true
+                    end
                     local content = f_read(input_file_path)
                     local first_line = string.match(content, "^[^\n]+")
                     local title
@@ -154,7 +158,7 @@ local function traverse(directory, doc_root)
             end
         end
     end
-    if #post_list > 0 then
+    if not has_index and #post_list > 0 then
         table.sort(post_list, function(a, b)
             if a.date == b.date then
                 return a.file_name > b.file_name
