@@ -1,6 +1,6 @@
 # kBlog
 
-kBlog 是轻量的静态网站生成器，让你立即开始记录自己的 idea。
+kBlog 是轻量的静态网站生成器，让你立即开始记录自己的 idea。Demo: https://isncg.github.io/kblog/
 
 ## 主要特性
  
