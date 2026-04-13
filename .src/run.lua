@@ -156,7 +156,6 @@ local function traverse(directory, doc_root)
 
         local post_list_count = #post_list
         for _, post in ipairs(post_list) do
-            local markdown_html = markdown(post.content)
             local result, error = aspect:render("post", post)
             if error then
                 print(error)

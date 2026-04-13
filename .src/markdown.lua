@@ -9,6 +9,7 @@
 ----------------------------------------------------------------------
 -- Utility functions
 ----------------------------------------------------------------------
+local inspect = require "inspect"
 
 local unpack = table.unpack or unpack
 
@@ -312,7 +313,7 @@ local function classify(line)
         end
     end
 
-    if line == "" then
+    if line == "" or line == "\n" then
         info.type = "blank"
         return info
     end
@@ -491,7 +492,9 @@ local function lists(array, sublist)
                 end
             else
                 for i = 1, #array - 1 do
-                    if array[i].type == "blank" and array[i + 1].type == "list_item" then
+                    local type = array[i].type
+                    local next_type = array[i + 1].type
+                    if (type == "blank" or type == "header" or type == "raw") and next_type == "list_item" then
                         return i + 1
                     end
                 end
@@ -501,8 +504,13 @@ local function lists(array, sublist)
         local function find_list_end(array, start)
             local pos = #array
             for i = start, #array - 1 do
-                if array[i].type == "blank" and array[i + 1].type ~= "list_item"
-                    and array[i + 1].type ~= "indented" and array[i + 1].type ~= "blank" then
+                local type = array[i].type
+                local next_type = array[i + 1].type
+                if (type == "list_item" or type == "indented") and (next_type == "header" or next_type == "raw") then
+                    pos = i
+                    break
+                end
+                if type == "blank" and next_type ~= "list_item" and next_type ~= "indented" and next_type ~= "blank" then
                     pos = i - 1
                     break
                 end
@@ -756,6 +764,7 @@ function block_transform(text, sublist)
     lines = tables(lines)
     lines = codeblocks(lines)
     lines = headers(lines)
+    print("before lists", inspect.inspect(lines))
     lines = lists(lines, sublist)
     lines = blockquotes(lines)
     lines = blocks_to_html(lines)
@@ -1050,12 +1059,12 @@ local function emphasis(text)
         text = text:gsub(s .. "([^%s][%*%_]?)" .. s, "<strong>%1</strong>")
         text = text:gsub(s .. "([^%s][^<>]-[^%s][%*%_]?)" .. s, "<strong>%1</strong>")
     end
-   --  for _, s in ipairs { "%*", "%_" } do
-   --      text = text:gsub(s .. "([^%s_])" .. s, "<em>%1</em>")
-   --      text = text:gsub(s .. "(<strong>[^%s_]</strong>)" .. s, "<em>%1</em>")
-   --      text = text:gsub(s .. "([^%s_][^<>_]-[^%s_])" .. s, "<em>%1</em>")
-   --      text = text:gsub(s .. "([^<>_]-<strong>[^<>_]-</strong>[^<>_]-)" .. s, "<em>%1</em>")
-   --  end
+    --  for _, s in ipairs { "%*", "%_" } do
+    --      text = text:gsub(s .. "([^%s_])" .. s, "<em>%1</em>")
+    --      text = text:gsub(s .. "(<strong>[^%s_]</strong>)" .. s, "<em>%1</em>")
+    --      text = text:gsub(s .. "([^%s_][^<>_]-[^%s_])" .. s, "<em>%1</em>")
+    --      text = text:gsub(s .. "([^<>_]-<strong>[^<>_]-</strong>[^<>_]-)" .. s, "<em>%1</em>")
+    --  end
     return text
 end
 
