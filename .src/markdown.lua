@@ -9,8 +9,6 @@
 ----------------------------------------------------------------------
 -- Utility functions
 ----------------------------------------------------------------------
-local inspect = require "inspect"
-
 local unpack = table.unpack or unpack
 
 -- Returns the result of mapping the values in table t through the function f
@@ -764,7 +762,6 @@ function block_transform(text, sublist)
     lines = tables(lines)
     lines = codeblocks(lines)
     lines = headers(lines)
-    print("before lists", inspect.inspect(lines))
     lines = lists(lines, sublist)
     lines = blockquotes(lines)
     lines = blocks_to_html(lines)
