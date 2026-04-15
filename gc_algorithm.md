@@ -1,14 +1,10 @@
 # Boehm-Demers-Weiser 垃圾回收
 
-Unity GC 文档：https://docs.unity.cn/cn/2021.3/Manual/performance-garbage-collector.html
-
-hboehm gc 主页：https://www.hboehm.info/gc/
-
-算法概述：https://www.hboehm.info/gc/gcdescr.html
-
-源码FAQ: https://www.hboehm.info/gc/faq.html
-
-源码：https://www.hboehm.info/gc/gc_source/
+- Unity GC 文档：https://docs.unity.cn/cn/2021.3/Manual/performance-garbage-collector.html
+- hboehm gc 主页：https://www.hboehm.info/gc/
+- 算法概述：https://www.hboehm.info/gc/gcdescr.html
+- 源码FAQ: https://www.hboehm.info/gc/faq.html
+- 源码：https://www.hboehm.info/gc/gc_source/
 
 注：hboehm 页面内容基本上就是吹自己的 acm 论文，不好啃。知道有哪些内容就行了。Unity 和 Mono 不见得就一点不改照搬实现，得看源码
 
@@ -54,19 +50,21 @@ https://www.hboehm.info/gc/papers/pldi91.ps.Z
 https://zhuanlan.zhihu.com/p/381859536
 
 https://cloud.tencent.com.cn/developer/ask/sof/115718737
-
+ 
 官方文档称具有分代回收功能，但也有论坛帖子明确说它不支持分代
 
 ### Deepseek 的分析
 
 Boehm GC 对分代回收的支持是“有条件的、非传统的”。虽然官方文档宣称支持，但其实现方式非常特殊，并且由于性能和维护问题，在现代版本中这一特性几乎被废弃。
-
+ 
 ⚙️ 特殊实现的机制与限制
+ 
 Boehm GC 的“分代回收”并非通常意义上将对象划分为年轻代和老年代的做法，而是通过写屏障（write barrier） 技术，并依赖操作系统的虚拟内存保护机制来实现的。
 - 依赖虚拟内存支持：这种实现方式对操作系统有严格的要求，这就是官方描述中强调“需要适当虚拟内存支持”的原因。
 - 几乎废弃的现状：由于性能和维护上的复杂性，这种基于虚拟内存的实现方式在当代已基本不再使用。例如，在 GCC 的文档中就提到，默认配置是增量分代的，但实际使用中问题很多。
 
 🚫 为何传统分代难以实现：保守式GC的限制
+ 
 之所以 Boehm GC 无法像 Java 等语言的 GC 那样实现标准的分代回收，其根本原因在于它的保守式垃圾回收（Conservative GC）本质。
 - 无法移动对象：保守式 GC 的核心是无法精确区分内存中的值是“指针”还是“数据”（如整数）。因此，为了安全起见，它不能移动任何对象。而移动对象，特别是将存活对象从“年轻代”晋升到“老年代”，是传统分代回收的必要环节。
 - 导致技术不兼容：由于无法移动对象，保守式收集器天然就无法与需要移动对象的技术（如内存压缩和标准的分代回收）兼容。这就是许多资料断定 Boehm GC “不支持分代”的理论依据。
