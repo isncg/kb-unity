@@ -55,6 +55,8 @@ https://zhuanlan.zhihu.com/p/381859536
 
 https://cloud.tencent.com.cn/developer/ask/sof/115718737
 
+官方文档称具有分代回收功能，但也有论坛帖子明确说它不支持分代
+
 ### Deepseek 的分析
 
 Boehm GC 对分代回收的支持是“有条件的、非传统的”。虽然官方文档宣称支持，但其实现方式非常特殊，并且由于性能和维护问题，在现代版本中这一特性几乎被废弃。
