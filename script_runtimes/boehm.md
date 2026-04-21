@@ -1,4 +1,6 @@
-# Boehm-Demers-Weiser 垃圾回收
+# Boehm GC
+
+Boehm，Boehm-Demers-Weiser 垃圾回收是 Mono 可选的一种垃圾回收算法
 
 - Unity GC 文档：https://docs.unity.cn/cn/2021.3/Manual/performance-garbage-collector.html
 - hboehm gc 主页：https://www.hboehm.info/gc/
