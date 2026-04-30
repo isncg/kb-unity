@@ -43,6 +43,27 @@ public class CustomRenderPipeline : RenderPipeline {
 }
 ```
 
+## 几何绘制
+
+ScriptableRenderer
+ScriptableRenderPass
+ScriptableRendererFeature
+ScriptableRendererData
+
+在 ScriptableRenderer 中，若干 ScriptableRenderPass 被组织成 RenderBlocks。
+
+ScriptableRenderer 在绘制时，通过 ExecuteBlock 方法先后绘制
+- RenderPassBlock.BeforeRendering
+- RenderPassBlock.MainRenderingOpaque
+- RenderPassBlock.MainRenderingTransparent
+- RenderPassBlock.AfterRendering
+
+在每个 RenderBlock 的 ExecuteBlock 绘制中，遍历该 block 对应的 ScriptableRenderPass，通过 ExecuteRenderPass 方法，调用每个 ScriptableRenderPass 的 Execute
+
+ScriptableRendererFeature 用来向 renderer 注入 ScriptableRenderPass 
+
+### Render Pass
+DrawingSettings
 
 ## SRP Batcher
 
