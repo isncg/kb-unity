@@ -13,7 +13,7 @@
 - 转换过程中根据提示编辑 `.PKGINFO`，将 `gtk` 相关依赖改为 `gtk4`
 - 安装：`sudo pacman -U tuanjiehub-1.4.1-1-x86_64.pkg.tar.zst`
 
-## 安装 JetBrain Rider
+## 安装 JetBrains Rider
 
 - 安装 rider: `yay -S rider`
 - 安装 toolbox，让 External Tools 能够检测到 rider: `yay -S jetbrains-toolbox`
